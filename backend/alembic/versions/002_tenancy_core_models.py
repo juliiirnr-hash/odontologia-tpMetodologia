@@ -86,7 +86,7 @@ def upgrade() -> None:
                 "created_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.text("CURRENT_TIMESTAMP"),
+                server_default=sa.func.now(),
             ),
         )
 
@@ -104,13 +104,13 @@ def upgrade() -> None:
                 "created_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.text("CURRENT_TIMESTAMP"),
+                server_default=sa.func.now(),
             ),
             sa.Column(
                 "updated_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.text("CURRENT_TIMESTAMP"),
+                server_default=sa.func.now(),
             ),
             sa.Column("deleted_at", sa.TIMESTAMP(timezone=True), nullable=True),
         )
