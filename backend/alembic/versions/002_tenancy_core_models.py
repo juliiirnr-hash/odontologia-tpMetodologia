@@ -86,9 +86,9 @@ def upgrade() -> None:
                 "created_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.func.now(),
             ),
         )
+        op.execute("ALTER TABLE tenant ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP")
 
     if not inspector.has_table("usuario"):
         op.create_table(
@@ -104,17 +104,17 @@ def upgrade() -> None:
                 "created_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.func.now(),
             ),
             sa.Column(
                 "updated_at",
                 sa.TIMESTAMP(timezone=True),
                 nullable=False,
-                server_default=sa.func.now(),
             ),
             sa.Column("deleted_at", sa.TIMESTAMP(timezone=True), nullable=True),
         )
         op.create_index("ux_usuario_tenant_email", "usuario", ["tenant_id", "email"], unique=True)
+        op.execute("ALTER TABLE usuario ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP")
+        op.execute("ALTER TABLE usuario ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP")
 
     if not _has_column(inspector, "config", "senia_requerida"):
         op.add_column(
