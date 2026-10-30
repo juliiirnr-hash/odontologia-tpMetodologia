@@ -20,6 +20,7 @@ from sqlalchemy import (
     Text,
     TIMESTAMP,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, validates
 from sqlalchemy.types import TypeDecorator
@@ -116,10 +117,10 @@ class AuditMixin:
     """Auditoría mínima en toda mutación del dominio."""
 
     created_at: Mapped[datetime] = mapped_column(
-        AwareDateTime(), nullable=False, default=_utc_now, server_default="CURRENT_TIMESTAMP"
+        AwareDateTime(), nullable=False, default=_utc_now, server_default=text("CURRENT_TIMESTAMP")
     )
     updated_at: Mapped[datetime] = mapped_column(
-        AwareDateTime(), nullable=False, default=_utc_now, onupdate=_utc_now, server_default="CURRENT_TIMESTAMP"
+        AwareDateTime(), nullable=False, default=_utc_now, onupdate=_utc_now, server_default=text("CURRENT_TIMESTAMP")
     )
     deleted_at: Mapped[datetime | None] = mapped_column(AwareDateTime(), nullable=True)
 
@@ -141,7 +142,7 @@ class TenantModel(Base):
         server_default="America/Argentina/Buenos_Aires",
     )
     created_at: Mapped[datetime] = mapped_column(
-        AwareDateTime(), nullable=False, default=_utc_now, server_default="CURRENT_TIMESTAMP"
+        AwareDateTime(), nullable=False, default=_utc_now, server_default=text("CURRENT_TIMESTAMP")
     )
 
     def __init__(self, **kwargs):
