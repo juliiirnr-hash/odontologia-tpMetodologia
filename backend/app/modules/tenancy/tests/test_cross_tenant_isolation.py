@@ -8,6 +8,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.agenda.models import TenantModel, UsuarioModel, UsuarioRoles
@@ -41,7 +42,7 @@ def test_listar_usuarios_solo_tenant(session: Session) -> None:
 
     # Query filtrando por tenant A
     usuarios_a = session.scalars(
-        UsuarioModel.__table__.select().where(UsuarioModel.tenant_id == tenant_a.id)
+        select(UsuarioModel).where(UsuarioModel.tenant_id == tenant_a.id)
     ).all()
 
     assert len(usuarios_a) == 1
@@ -50,7 +51,7 @@ def test_listar_usuarios_solo_tenant(session: Session) -> None:
 
     # Query filtrando por tenant B
     usuarios_b = session.scalars(
-        UsuarioModel.__table__.select().where(UsuarioModel.tenant_id == tenant_b.id)
+        select(UsuarioModel).where(UsuarioModel.tenant_id == tenant_b.id)
     ).all()
 
     assert len(usuarios_b) == 1

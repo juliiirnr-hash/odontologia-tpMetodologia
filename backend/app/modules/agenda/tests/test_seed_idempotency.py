@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 import pytest
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.agenda.models import UsuarioModel
@@ -20,7 +21,7 @@ def test_seed_demo_idempotente_sin_duplicar_usuarios(session: Session) -> None:
     assert resultado1["tenant"] == TENANT_DEMO
 
     usuarios_despues_1 = session.scalars(
-        UsuarioModel.__table__.select().where(UsuarioModel.tenant_id == TENANT_DEMO)
+        select(UsuarioModel).where(UsuarioModel.tenant_id == TENANT_DEMO)
     ).all()
     count_1 = len(usuarios_despues_1)
     assert count_1 == 4  # recepcion, odontologo, dueno, multi
@@ -30,7 +31,7 @@ def test_seed_demo_idempotente_sin_duplicar_usuarios(session: Session) -> None:
     assert resultado2["tenant"] == TENANT_DEMO
 
     usuarios_despues_2 = session.scalars(
-        UsuarioModel.__table__.select().where(UsuarioModel.tenant_id == TENANT_DEMO)
+        select(UsuarioModel).where(UsuarioModel.tenant_id == TENANT_DEMO)
     ).all()
     count_2 = len(usuarios_despues_2)
 
@@ -48,7 +49,7 @@ def test_seed_demo_usuarios_sin_password_hash(session: Session) -> None:
     seed_demo(session)
 
     usuarios = session.scalars(
-        UsuarioModel.__table__.select().where(UsuarioModel.tenant_id == TENANT_DEMO)
+        select(UsuarioModel).where(UsuarioModel.tenant_id == TENANT_DEMO)
     ).all()
 
     for usuario in usuarios:
@@ -62,7 +63,7 @@ def test_seed_demo_usuario_multi_3_roles(session: Session) -> None:
     seed_demo(session)
 
     usuario_multi = session.scalars(
-        UsuarioModel.__table__.select().where(
+        select(UsuarioModel).where(
             UsuarioModel.tenant_id == TENANT_DEMO,
             UsuarioModel.email == "multi@demo.com",
         )

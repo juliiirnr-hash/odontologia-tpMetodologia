@@ -21,13 +21,7 @@ from app.modules.agenda.models import TenantModel, UsuarioModel, UsuarioRoles
 
 @pytest.fixture()
 def setup_db(session_factory):  # noqa: ANN201
-    """Setup de DB para tests de usuarios."""
-    s = session_factory()
-    tenant_a = TenantModel(id=str(uuid.uuid4()), slug="tenant-a", nombre="Tenant A")
-    tenant_b = TenantModel(id=str(uuid.uuid4()), slug="tenant-b", nombre="Tenant B")
-    s.add_all([tenant_a, tenant_b])
-    s.commit()
-    s.close()
+    """Provee la fábrica aislada para la aplicación bajo prueba."""
     return session_factory
 
 
@@ -113,7 +107,7 @@ def test_no_dueno_no_puede_invitar(client: TestClient, session: Session) -> None
     )
 
     assert response.status_code == 403
-    assert response.json()["detail"]["code"] == "RN-AU-04"
+    assert response.json()["code"] == "RN-AU-04"
 
 
 def test_rol_inexistente_rechazado(client: TestClient, session: Session) -> None:
@@ -151,7 +145,7 @@ def test_rol_inexistente_rechazado(client: TestClient, session: Session) -> None
     )
 
     assert response.status_code == 422
-    detail = response.json()["detail"]
+    detail = response.json()
     assert detail["code"] == "RN-AU-04"
     assert "Rol inválido" in detail["message"]
 
@@ -209,7 +203,7 @@ def test_email_duplicado_en_tenant_rechazado(client: TestClient, session: Sessio
     )
 
     assert response.status_code == 422
-    detail = response.json()["detail"]
+    detail = response.json()
     assert detail["code"] == "RN-AU-04"
     assert "ya está registrado en este consultorio" in detail["message"]
 
@@ -298,5 +292,4 @@ def test_no_dueno_no_puede_listar(client: TestClient, session: Session) -> None:
     )
 
     assert response.status_code == 403
-    assert response.json()["detail"]["code"] == "RN-AU-04"
-
+    assert response.json()["code"] == "RN-AU-04"
