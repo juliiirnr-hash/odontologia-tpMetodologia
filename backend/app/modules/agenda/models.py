@@ -91,18 +91,19 @@ class EnumArrayType(TypeDecorator):
                 valores.append(item.value)
             else:
                 valores.append(str(item))
-        if dialect.name == "postgresql":
-            return valores
+        # La columna es Text: se normaliza SIEMPRE a lista separada por comas,
+        # para que el driver no la serialize como literal de array PG ({a,b}).
         return ",".join(valores)
 
     def process_result_value(self, value, dialect):
         if value in (None, ""):
             return []
         if isinstance(value, list):
-            return value
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return list(value)
+            return [str(item) for item in value]
+        texto = str(value).strip()
+        if texto.startswith("{") and texto.endswith("}"):
+            texto = texto[1:-1]  # literal de array PG que quedó guardado en Text
+        return [item.strip() for item in texto.split(",") if item.strip()]
 
 
 class TenantMixin:
